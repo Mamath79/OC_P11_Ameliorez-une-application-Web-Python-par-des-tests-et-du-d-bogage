@@ -43,25 +43,35 @@ def book(competition,club):
 
 @app.route('/purchasePlaces', methods=['POST'])
 def purchasePlaces():
-    competition = [c for c in competitions if c['name'] == request.form['competition']][0]
-    club = [c for c in clubs if c['name'] == request.form['club']][0]
+    competition = next((c for c in competitions if c['name'] == request.form['competition']), None)
+    club = next((c for c in clubs if c['name'] == request.form['club']), None)
     placesRequired = int(request.form['places'])
 
-    # Validation : vérifier que le club a suffisamment de points
-    if placesRequired > int(club['points']):
-        flash("You cannot book more places than your points allow.")
+    # Vérification des entrées
+    if not competition or not club:
+        flash("Invalid competition or club.")
         return render_template('welcome.html', club=club, competitions=competitions)
 
-    # Validation : vérifier que la compétition a assez de places disponibles
+    if placesRequired <= 0:
+        flash("Invalid number of places.")
+        return render_template('welcome.html', club=club, competitions=competitions)
+
+    # Vérification des conditions spécifiques
     if placesRequired > int(competition['numberOfPlaces']):
         flash("Not enough places available in the competition.")
         return render_template('welcome.html', club=club, competitions=competitions)
 
-    # Mise à jour des points et des places
+    if placesRequired > int(club['points']):
+        flash("You cannot book more places than your points allow.")
+        return render_template('welcome.html', club=club, competitions=competitions)
+
+    # Mise à jour des données en cas de succès
     competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
     club['points'] = int(club['points']) - placesRequired
     flash(f"Great! Booking complete. You have {club['points']} points remaining.")
     return render_template('welcome.html', club=club, competitions=competitions)
+
+
 
 
 # TODO: Add route for points display
