@@ -47,31 +47,14 @@ def purchasePlaces():
     club = next((c for c in clubs if c['name'] == request.form['club']), None)
     placesRequired = int(request.form['places'])
 
-    # Vérification des entrées
-    if not competition or not club:
-        flash("Invalid competition or club.")
-        return render_template('welcome.html', club=club, competitions=competitions)
-
-    if placesRequired <= 0:
-        flash("Invalid number of places.")
-        return render_template('welcome.html', club=club, competitions=competitions)
-
-    # Vérification des conditions spécifiques
-    if placesRequired > int(competition['numberOfPlaces']):
-        flash("Not enough places available in the competition.")
-        return render_template('welcome.html', club=club, competitions=competitions)
-
+    # Vérification qu'un club ne peut reserver plus de places que de places disponibles
     if placesRequired > int(club['points']):
         flash("You cannot book more places than your points allow.")
         return render_template('welcome.html', club=club, competitions=competitions)
-
-    # Mise à jour des données en cas de succès
-    competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
-    club['points'] = int(club['points']) - placesRequired
-    flash(f"Great! Booking complete. You have {club['points']} points remaining.")
+    
+    competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
+    flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions)
-
-
 
 
 # TODO: Add route for points display
