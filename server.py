@@ -53,7 +53,6 @@ def purchasePlaces():
 
 # TODO: Add route for points display
 
-
 @app.route('/logout')
 def logout():
     return redirect(url_for('index'))
