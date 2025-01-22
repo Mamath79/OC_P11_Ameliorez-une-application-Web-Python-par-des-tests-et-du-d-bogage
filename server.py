@@ -14,7 +14,9 @@ def loadCompetitions():
          return listOfCompetitions
 
 def saveCompetitions(competitions):
-    """Sauvegarde les données des compétitions dans le fichier JSON."""
+    """
+    Sauvegarde les données des compétitions dans le fichier JSON.
+    """
     with open('competitions.json', 'w') as comps:
         json.dump({"competitions": competitions}, comps, indent=4)
 
