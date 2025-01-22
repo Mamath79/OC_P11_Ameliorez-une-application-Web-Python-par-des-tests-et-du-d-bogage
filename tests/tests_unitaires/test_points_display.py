@@ -12,7 +12,7 @@ def client():
 
 def test_point_display(client):
     """
-    Verifie que  page des points affiche bien les clubs et leurs points respectifs
+    Verifie que la page des points affiche bien les clubs et leurs points respectifs
     """
     
     # Charger le fichier clubs.json
