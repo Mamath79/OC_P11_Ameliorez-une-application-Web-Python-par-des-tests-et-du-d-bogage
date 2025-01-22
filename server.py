@@ -15,7 +15,9 @@ def loadCompetitions():
 
 
 def saveClubs(clubs):
-    """Sauvegarde les points mis à jour dans le fichier JSON."""
+    """ 
+    Sauvegarde les points mis à jour dans le fichier JSON.
+    """
     with open('clubs.json', 'w') as c:
         json.dump({"clubs": clubs}, c, indent=4)
 
