@@ -1,6 +1,6 @@
 import json
 from flask import Flask,render_template,request,redirect,flash,url_for
-from utils import has_enough_places
+from utilities.has_enough_places import has_enough_places
 
 
 def loadClubs():
