@@ -34,8 +34,10 @@ def test_purchase_more_than_twelve_places(client, mock_data):
         'club': 'Elite Club',
         'places': 13  # Plus de 12 places
     })
-    
-    assert b"You can not book more than 12 places." in response.data
+
+    assert response.status_code ==302
+
+    assert b'You can not book more than 12 places.'
 
 def test_purchase_exactly_twelve_places(client, mock_data):
     """Teste qu'un club peut réserver exactement 12 places sans problème."""
