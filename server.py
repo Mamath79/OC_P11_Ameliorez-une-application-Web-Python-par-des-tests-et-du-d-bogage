@@ -1,5 +1,6 @@
 import json
 from flask import Flask,render_template,request,redirect,flash,url_for
+from utilities.matching_club_login import matching_club_loging
 
 
 def loadClubs():
@@ -27,13 +28,10 @@ def index():
 @app.route('/showSummary',methods=['POST'])
 def showSummary():
     matching_club = [club for club in clubs if club['email'] == request.form['email']]
-    # ajout d'une condition de conformiter d'email et une redirection 
-    if not matching_club:
-        flash('sorry, email not found')
-        return redirect('/')
-    else:
-        club = matching_club[0]
-        return render_template('welcome.html',club=club,competitions=competitions)
+
+    # On appelle la fonction utilitaire et renvoie directement sa réponse
+    return matching_club_loging(matching_club, competitions)
+    
 
 @app.route('/book/<competition>/<club>')
 def book(competition,club):
