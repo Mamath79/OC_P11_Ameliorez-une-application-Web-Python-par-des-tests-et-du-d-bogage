@@ -1,5 +1,5 @@
 import pytest
-from server import app
+from server import app, loadClubs
 
 
 @pytest.fixture
@@ -32,11 +32,13 @@ def test_access_show_summary_with_valid_email(client):
     """
     Teste que l'application gère correctement un e-mail valide en affichant la page de bienvenue.
     """
-    response = client.post('/showSummary', data={'email': 'kate@shelifts.co.uk'})
+    club = loadClubs()
+
+    response = client.post('/showSummary', data={'email': club[0]['email']})
 
     # Vérifie que l'utilisateur est redirigé vers la page de résumé (code 200)
     assert response.status_code == 200
 
     # Vérifie que le contenu attendu est présent dans la réponse (ex : e-mail ou points)
-    assert b"Welcome, kate@shelifts.co.uk" in response.data
-    assert b"Points available" in response.data
+    assert bytes(club[0]['email'], 'utf-8') in response.data
+    assert bytes(club[0]['points'], 'utf-8') in response.data
