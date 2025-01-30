@@ -1,51 +1,61 @@
 import pytest
-from server import app
+from server import app, loadClubs
+
 
 @pytest.fixture
 def client():
-    """Configure un client de test Flask pour simuler des requêtes HTTP."""
+    """
+    Configure un client de test Flask pour simuler des requêtes HTTP.
+    """
+
     app.config['TESTING'] = True
     with app.test_client() as client:
         yield client
 
-@pytest.fixture
-def mock_data(monkeypatch):
-    """Remplace les données des compétitions et des clubs pour s'assurer que les tests fonctionnent."""
-    
-    # Données fictives mais réalistes
-    test_clubs = [
-        {"name": "Elite Club", "points": "15"},
-        {"name": "Iron Temple", "points": "10"},
-    ]
-    
-    test_competitions = [
-        {"name": "Fictional Cup", "date": "2025-06-30 10:00:00", "numberOfPlaces": "30"}
-    ]
-    
-    # Monkeypatch pour charger ces données à la place du JSON
-    monkeypatch.setattr("server.clubs", test_clubs)
-    monkeypatch.setattr("server.competitions", test_competitions)
+def test_purchase_more_places_than_points(client):
+    """
+    Teste qu'un club ne peut pas acheter plus de 12 places.
+    """
 
-def test_purchase_more_than_twelve_places(client, mock_data):
-    """Teste qu'un club ne peut pas réserver plus de 12 places."""
+    # Charger dynamiquement le JSON clubs.json
+    clubs = loadClubs()
     
+    # Prendre le premier club et récupérer son nombre de points
+    club_name = clubs[0]['name']
+
+    # Simuler une réservation avec plus de points que disponibles
     response = client.post('/purchasePlaces', data={
-        'competition': 'Fictional Cup',
-        'club': 'Elite Club',
-        'places': 13  # Plus de 12 places
+        'competition': 'Spring Festival',
+        'club': club_name,
+        'places': 13  # Réserver plus que les points disponibles
     })
 
-    assert response.status_code ==302
-
-    assert b'You can not book more than 12 places.'
-
-def test_purchase_exactly_twelve_places(client, mock_data):
-    """Teste qu'un club peut réserver exactement 12 places sans problème."""
+    # Vérifie que l'utilisateur est redirigé vers la page de résumé (code 200)
+    assert response.status_code == 200
     
+    # Vérifier que l'utilisateur reçoit un message d'erreur
+    assert b"You can not book more than 12 places." in response.data
+
+
+def test_purchase_exactly_twelve_places(client):
+    """
+    Teste qu'un club peut réserver exactement 12 places sans problème.
+    """
+    
+    # Charger dynamiquement le JSON clubs.json
+    clubs = loadClubs()
+    
+    # Prendre le premier club et récupérer son nombre de points
+    club_name = clubs[0]['name']
+
     response = client.post('/purchasePlaces', data={
-        'competition': 'Fictional Cup',
-        'club': 'Elite Club',
-        'places': 12  # Limite maximale autorisée
+        'competition': 'Spring Festival',
+        'club': club_name,
+        'places': 12
     })
+    
+    # Vérifie que l'utilisateur est redirigé vers la page de résumé (code 200)
+    assert response.status_code == 200
     
     assert b"Great-booking complete!" in response.data
+    

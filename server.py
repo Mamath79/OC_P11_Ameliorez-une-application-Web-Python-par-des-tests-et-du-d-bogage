@@ -51,7 +51,7 @@ def purchasePlaces():
     # Vérification des conditions spécifiques
     if not cannot_book_more_than_12_places(placesRequired):
         flash('You can not book more than 12 places.')
-        return redirect('/')  # Redirige vers la page d'accueil après avoir flashé le message
+        return render_template('welcome.html', club=club, competitions=competitions)
 
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
     flash('Great-booking complete!')
