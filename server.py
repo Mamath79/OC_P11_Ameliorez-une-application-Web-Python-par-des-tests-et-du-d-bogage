@@ -1,6 +1,7 @@
 import json
 from flask import Flask,render_template,request,redirect,flash,url_for
 from utilities.has_enough_places import has_enough_places
+from utilities.cannot_book_more_places_than_availables import cannot_book_more_places_than_availables
 
 
 def loadClubs():
@@ -57,6 +58,11 @@ def purchasePlaces():
 
     if not has_enough_places(placesRequired, club):
         flash("You cannot book more places than your points allow.")
+        return render_template('welcome.html', club=club, competitions=competitions)
+
+
+    if not cannot_book_more_places_than_availables(placesRequired,competition):
+        flash('You can not book more places than availables')
         return render_template('welcome.html', club=club, competitions=competitions)
 
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
