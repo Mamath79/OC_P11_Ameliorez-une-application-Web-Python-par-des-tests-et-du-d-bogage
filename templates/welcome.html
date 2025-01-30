@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -5,32 +6,39 @@
     <title>Summary | GUDLFT Registration</title>
 </head>
 <body>
-        <h2>Welcome, {{club['email']}} </h2><a href="{{url_for('logout')}}">Logout</a>
+    <h2>Welcome, {{ club['email'] }}</h2>
+    <a href="{{ url_for('logout') }}">Logout</a>
 
-    {% with messages = get_flashed_messages()%}
+    <!-- Gestion des messages flash -->
+    {% with messages = get_flashed_messages() %}
     {% if messages %}
-        <ul>
-       {% for message in messages %}
-            <li>{{message}}</li>
-        {% endfor %}
-       </ul>
-    {% endif%}
-    Points available: {{club['points']}}
+        <div style="background-color: #f8d7da; color: #842029; padding: 10px; border: 1px solid #f5c6cb; margin-bottom: 15px;">
+            <ul>
+                {% for message in messages %}
+                    <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- Points disponibles -->
+    <p>Points available: {{ club['points'] }}</p>
+
+    <!-- Liste des compétitions -->
     <h3>Competitions:</h3>
     <ul>
-        {% for comp in competitions%}
+        {% for comp in competitions %}
         <li>
-            {{comp['name']}}<br />
-            Date: {{comp['date']}}</br>
-            Number of Places: {{comp['numberOfPlaces']}}
-            {%if comp['numberOfPlaces']|int >0%}
-            <a href="{{ url_for('book',competition=comp['name'],club=club['name']) }}">Book Places</a>
-            {%endif%}
+            <strong>{{ comp['name'] }}</strong><br>
+            Date: {{ comp['date'] }}<br>
+            Number of Places: {{ comp['numberOfPlaces'] }}<br>
+            {% if comp['numberOfPlaces']|int > 0 %}
+                <a href="{{ url_for('book', competition=comp['name'], club=club['name']) }}">Book Places</a>
+            {% endif %}
         </li>
-        <hr />
+        <hr>
         {% endfor %}
     </ul>
-    {%endwith%}
-
 </body>
 </html>
