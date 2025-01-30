@@ -1,7 +1,6 @@
 import json
 from flask import Flask,render_template,request,redirect,flash,url_for
-from datetime import datetime
-
+from utilities.cannot_book_places_in_past_cometition import cannot_book_places_in_past_cometition
 
 def loadClubs():
     with open('clubs.json') as c:
@@ -48,9 +47,7 @@ def purchasePlaces():
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
 
-    # Vérifier si la compétition est passée
-    competition_date = datetime.strptime(competition['date'], "%Y-%m-%d %H:%M:%S")
-    if competition_date < datetime.now():
+    if not cannot_book_places_in_past_cometition(competition):
         flash("You cannot book places for a past competition.")
         return render_template('welcome.html', club=club, competitions=competitions)
 
