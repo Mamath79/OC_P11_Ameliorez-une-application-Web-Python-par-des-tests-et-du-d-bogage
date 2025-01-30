@@ -30,6 +30,9 @@ def test_purchase_more_places_than_points(client):
         'places': club_points + 1  # Réserver plus que les points disponibles
     })
 
+    # Vérifie que l'utilisateur est redirigé vers la page de résumé (code 200)
+    assert response.status_code == 200
+    
     # Vérifier que l'utilisateur reçoit un message d'erreur
     assert b"You cannot book more places than your points allow." in response.data
 
