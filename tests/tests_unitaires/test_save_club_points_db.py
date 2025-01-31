@@ -27,9 +27,6 @@ def mock_data(monkeypatch):
     return test_clubs
 
 def test_club_points_are_updated(client, mock_data):
-    """
-    Vérifie que les points d'un club sont bien mis à jour après un achat.
-    """
     club_name = "Simply Lift"
     initial_points = int(next(c for c in mock_data if c['name'] == club_name)['points'])
 
@@ -43,3 +40,4 @@ def test_club_points_are_updated(client, mock_data):
 
     assert updated_points == initial_points - 3
     assert b"Great! Booking complete" in response.data
+
