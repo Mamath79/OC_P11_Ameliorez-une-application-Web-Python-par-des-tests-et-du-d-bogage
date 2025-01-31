@@ -72,13 +72,11 @@ def purchasePlaces():
     if errors:
         for error in errors:
             flash(error)
-            print(f"✅ Message flashé: {error}")  # Debug
         return render_template('welcome.html', club=club, competitions=competitions)
 
     # Si aucune erreur, on procède avec la réservation
     competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
     flash('Great-booking complete!')
-    print("✅ Message flashé: Great-booking complete!")  # Debug
     return render_template('welcome.html', club=club, competitions=competitions)
 
 # TODO: Add route for points display
