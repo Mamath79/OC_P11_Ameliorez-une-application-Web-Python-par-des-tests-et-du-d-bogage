@@ -3,7 +3,7 @@ from flask import Flask,render_template,request,redirect,flash,url_for
 from utilities.has_enough_places import has_enough_places
 from utilities.cannot_book_more_places_than_availables import cannot_book_more_places_than_availables
 from utilities.cannot_book_more_than_12_places import cannot_book_more_than_12_places
-
+from utilities.cannot_book_places_in_past_cometition import cannot_book_places_in_past_cometition
 
 def loadClubs():
     with open('clubs.json') as c:
@@ -67,6 +67,9 @@ def purchasePlaces():
 
     if not cannot_book_more_than_12_places(placesRequired):
         errors.append("You can not book more than 12 places.")
+
+    if not cannot_book_places_in_past_cometition(competition):
+        errors.append("You cannot book places for a past competition.")
 
     # Si au moins une erreur a été détectée, on les affiche et on retourne
     if errors:
