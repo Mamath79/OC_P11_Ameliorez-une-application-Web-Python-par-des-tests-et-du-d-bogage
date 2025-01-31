@@ -1,19 +1,20 @@
 import pytest
 from server import app, loadClubs
 
+
 @pytest.fixture
 def client():
     """
     Configure un client de test Flask pour simuler des requêtes HTTP.
     """
-    app.config['TESTING'] = True  # Active le mode test de Flask
+
+    app.config['TESTING'] = True
     with app.test_client() as client:
         yield client
 
-
 def test_purchase_more_places_than_points(client):
     """
-    Teste qu'un club ne peut pas acheter plus de places qu'il n'a de points.
+    Teste qu'un club ne peut pas acheter plus de 12 places.
     """
 
     # Charger dynamiquement le JSON clubs.json
@@ -21,41 +22,40 @@ def test_purchase_more_places_than_points(client):
     
     # Prendre le premier club et récupérer son nombre de points
     club_name = clubs[0]['name']
-    club_points = int(clubs[0]['points'])  
 
     # Simuler une réservation avec plus de points que disponibles
     response = client.post('/purchasePlaces', data={
         'competition': 'Spring Festival',
         'club': club_name,
-        'places': club_points + 1  # Réserver plus que les points disponibles
+        'places': 13  # Réserver plus que les points disponibles
     })
 
     # Vérifie que l'utilisateur est redirigé vers la page de résumé (code 200)
     assert response.status_code == 200
     
     # Vérifier que l'utilisateur reçoit un message d'erreur
-    assert b"You can not book more places than your points allow." in response.data
+    assert b"You can not book more than 12 places." in response.data
 
 
-def test_purchase_with_sufficient_points(client):
+def test_purchase_exactly_twelve_places(client):
     """
-    Teste qu'un club peut acheter des places tant qu'il a assez de points.
+    Teste qu'un club peut réserver exactement 12 places sans problème.
     """
-
+    
     # Charger dynamiquement le JSON clubs.json
     clubs = loadClubs()
     
     # Prendre le premier club et récupérer son nombre de points
     club_name = clubs[0]['name']
-    club_points = int(clubs[0]['points'])  
 
-    # Vérifier qu'on peut acheter un nombre de places correct
-    places_to_book = min(1, club_points)  # Assure que l'on prend au moins 1 place si possible
     response = client.post('/purchasePlaces', data={
         'competition': 'Spring Festival',
         'club': club_name,
-        'places': places_to_book
+        'places': 12
     })
-
-    # Vérifier que la réservation réussit
+    
+    # Vérifie que l'utilisateur est redirigé vers la page de résumé (code 200)
+    assert response.status_code == 200
+    
     assert b"Great-booking complete!" in response.data
+    

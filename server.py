@@ -2,6 +2,7 @@ import json
 from flask import Flask,render_template,request,redirect,flash,url_for
 from utilities.has_enough_places import has_enough_places
 from utilities.cannot_book_more_places_than_availables import cannot_book_more_places_than_availables
+from utilities.cannot_book_more_than_12_places import cannot_book_more_than_12_places
 
 
 def loadClubs():
@@ -56,21 +57,29 @@ def purchasePlaces():
     club = next((c for c in clubs if c['name'] == request.form['club']), None)
     placesRequired = int(request.form['places'])
 
-    if not cannot_book_more_places_than_availables(placesRequired,competition):
-        flash('You can not book more places than availables')
-        return render_template('welcome.html', club=club, competitions=competitions)
+    errors = []  # Liste pour stocker tous les messages d'erreur
 
     if not has_enough_places(placesRequired, club):
-        flash("You cannot book more places than your points allow.")
+        errors.append("You can not book more places than your points allow.")
+
+    if not cannot_book_more_places_than_availables(placesRequired, competition):
+        errors.append("You can not book more places than availables")
+
+    if not cannot_book_more_than_12_places(placesRequired):
+        errors.append("You can not book more than 12 places.")
+
+    # Si au moins une erreur a été détectée, on les affiche et on retourne
+    if errors:
+        for error in errors:
+            flash(error)
+            print(f"✅ Message flashé: {error}")  # Debug
         return render_template('welcome.html', club=club, competitions=competitions)
 
-
-    
-
-    competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
+    # Si aucune erreur, on procède avec la réservation
+    competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
     flash('Great-booking complete!')
+    print("✅ Message flashé: Great-booking complete!")  # Debug
     return render_template('welcome.html', club=club, competitions=competitions)
-
 
 # TODO: Add route for points display
 
