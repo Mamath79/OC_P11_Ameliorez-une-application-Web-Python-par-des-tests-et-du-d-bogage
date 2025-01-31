@@ -1,6 +1,7 @@
 import pytest
 import json
-from server import app, loadClubs, saveClubs
+from server import app
+
 
 @pytest.fixture
 def client():
@@ -21,7 +22,7 @@ def mock_data(monkeypatch):
     monkeypatch.setattr("server.clubs", test_clubs)
 
     # Monkeypatch pour empêcher l'écriture dans clubs.json
-    monkeypatch.setattr("server.saveClubs", lambda clubs: None)
+    monkeypatch.setattr("server.save_club_points_db", lambda clubs: None)
 
     return test_clubs
 
