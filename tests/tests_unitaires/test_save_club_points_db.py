@@ -1,43 +1,39 @@
 import pytest
 import json
-from server import app
-
-
-@pytest.fixture
-def client():
-    """Crée un client de test Flask pour simuler des requêtes HTTP."""
-    app.config['TESTING'] = True
-    with app.test_client() as client:
-        yield client
+import shutil
+import os
+from utilities.save_club_points_db import save_club_points_db
 
 @pytest.fixture
-def mock_data(monkeypatch):
-    """
-    Charge les données des clubs et empêche l'écriture sur le fichier JSON.
-    """
-    with open('clubs.json') as f:
-        test_clubs = json.load(f)['clubs']
+def backup_clubs_json():
+    """Crée une sauvegarde de `clubs.json` avant le test et la restaure après."""
+    backup_file = "clubs_backup.json"
+    original_file = "clubs.json"
 
-    # Monkeypatch pour charger les clubs depuis la copie
-    monkeypatch.setattr("server.clubs", test_clubs)
+    shutil.copy(original_file, backup_file)  # Sauvegarde
+    yield original_file  # Fichier utilisé dans le test
+    shutil.move(backup_file, original_file)  # Restauration après test
 
-    # Monkeypatch pour empêcher l'écriture dans clubs.json
-    monkeypatch.setattr("server.save_club_points_db", lambda clubs: None)
+def test_save_club_points_db(backup_clubs_json):
+    """Teste que `save_club_points_db()` modifie bien `clubs.json` et restaure l'original après test."""
+    original_file = backup_clubs_json
 
-    return test_clubs
+    # Charger les clubs avant modification
+    with open(original_file, "r") as f:
+        clubs_data = json.load(f)["clubs"]
 
-def test_club_points_are_updated(client, mock_data):
+    # Modifier un club
     club_name = "Simply Lift"
-    initial_points = int(next(c for c in mock_data if c['name'] == club_name)['points'])
+    for club in clubs_data:
+        if club["name"] == club_name:
+            club["points"] = 999  # Changement test
 
-    response = client.post('/purchasePlaces', data={
-        'competition': 'Spring Festival',
-        'club': club_name,
-        'places': 3
-    })
+    # Sauvegarder dans clubs.json (normalement utilisé par server.py)
+    save_club_points_db(clubs_data)
 
-    updated_points = int(next(c for c in mock_data if c['name'] == club_name)['points'])
+    # Recharger pour vérifier la modification
+    with open(original_file, "r") as f:
+        updated_data = json.load(f)["clubs"]
 
-    assert updated_points == initial_points - 3
-    assert b"Great! Booking complete" in response.data
+    assert any(c["name"] == club_name and c["points"] == 999 for c in updated_data), "Les points du club n'ont pas été mis à jour."
 
