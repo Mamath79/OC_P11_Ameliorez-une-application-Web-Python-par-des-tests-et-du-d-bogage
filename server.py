@@ -3,9 +3,9 @@ from flask import Flask,render_template,request,redirect,flash,url_for
 from utilities.has_enough_places import has_enough_places
 from utilities.cannot_book_more_places_than_availables import cannot_book_more_places_than_availables
 from utilities.cannot_book_more_than_12_places import cannot_book_more_than_12_places
-from utilities.cannot_book_places_in_past_cometition import cannot_book_places_in_past_cometition
+from utilities.cannot_book_places_in_past_competition import cannot_book_places_in_past_competition
 from utilities.save_club_points_db import save_club_points_db
-
+from utilities.save_competitions_points_db import save_competitions_points_db
 
 def loadClubs():
     with open('clubs.json') as c:
@@ -17,7 +17,6 @@ def loadCompetitions():
     with open('competitions.json') as comps:
          listOfCompetitions = json.load(comps)['competitions']
          return listOfCompetitions
-
 
 app = Flask(__name__)
 app.secret_key = 'something_special'
@@ -70,7 +69,7 @@ def purchasePlaces():
     if not cannot_book_more_than_12_places(placesRequired):
         errors.append("You can not book more than 12 places.")
 
-    if not cannot_book_places_in_past_cometition(competition):
+    if not cannot_book_places_in_past_competition(competition):
         errors.append("You cannot book places for a past competition.")
 
     # Si au moins une erreur a été détectée, on les affiche et on retourne
@@ -85,6 +84,9 @@ def purchasePlaces():
 
     # Sauvegarde dans le fichier JSON
     save_club_points_db(clubs)
+
+    # Sauvegarde des données des competitions dans les fichiers JSON
+    save_competitions_points_db(competitions)
 
     flash("Great-booking complete!")
     return render_template('welcome.html', club=club, competitions=competitions)

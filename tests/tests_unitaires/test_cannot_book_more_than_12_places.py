@@ -17,6 +17,11 @@ def mock_save_clubs(monkeypatch):
     """Empêche la sauvegarde des clubs dans clubs.json lors des tests."""
     monkeypatch.setattr("server.save_club_points_db", lambda clubs, file_path="clubs.json": None)
       
+@pytest.fixture(autouse=True)
+def mock_save_competitions(monkeypatch):
+    """Empêche la sauvegarde des compétitions dans competitions.json lors des tests."""
+    monkeypatch.setattr("server.save_competitions_points_db", lambda competitions, file_path="competitions.json": None)
+
 
 def test_purchase_more_places_than_points(client):
     """
@@ -33,7 +38,7 @@ def test_purchase_more_places_than_points(client):
     response = client.post('/purchasePlaces', data={
         'competition': 'Spring Festival',
         'club': club_name,
-        'places': 13  # Réserver plus que les points disponibles
+        'places': 13  # Réserver plus que 12 places
     })
 
     # Vérifie que l'utilisateur est redirigé vers la page de résumé (code 200)

@@ -2,7 +2,7 @@ from datetime import datetime
 from flask import flash,render_template
 
 
-def cannot_book_places_in_past_cometition(competition):
+def cannot_book_places_in_past_competition(competition):
     """
     Vérifier si la compétition est passée
     """
