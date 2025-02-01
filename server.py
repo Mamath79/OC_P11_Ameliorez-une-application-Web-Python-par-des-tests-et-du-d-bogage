@@ -1,6 +1,6 @@
 import json
 from flask import Flask,render_template,request,redirect,flash,url_for
-
+from utilities.save_competitions_points_db import save_competitions_points_db
 
 def loadClubs():
     with open('clubs.json') as c:
@@ -12,13 +12,6 @@ def loadCompetitions():
     with open('competitions.json') as comps:
          listOfCompetitions = json.load(comps)['competitions']
          return listOfCompetitions
-
-def saveCompetitions(competitions):
-    """
-    Sauvegarde les données des compétitions dans le fichier JSON.
-    """
-    with open('competitions.json', 'w') as comps:
-        json.dump({"competitions": competitions}, comps, indent=4)
 
 app = Flask(__name__)
 app.secret_key = 'something_special'
@@ -54,9 +47,9 @@ def purchasePlaces():
     placesRequired = int(request.form['places'])
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
 
-    # sauvergarde des données dans le fichier json
-    # Sauvegarde des données dans les fichiers JSON
-    saveCompetitions(competitions)
+
+    # Sauvegarde des données des competitions dans les fichiers JSON
+    save_competitions_points_db(competitions)
 
     flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions)
