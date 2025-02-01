@@ -32,6 +32,12 @@ def mock_data(monkeypatch):
     monkeypatch.setattr("server.competitions", test_competitions)
     monkeypatch.setattr("server.clubs", test_clubs)
 
+@pytest.fixture(autouse=True)
+def mock_save_clubs(monkeypatch):
+    """Empêche la sauvegarde des clubs dans clubs.json lors des tests."""
+    monkeypatch.setattr("server.save_club_points_db", lambda clubs, file_path="clubs.json": None)
+
+
 def test_booking_past_competition(client, mock_data):
     """
     Vérifie qu'on ne peut pas réserver une compétition déjà passée.
@@ -52,4 +58,5 @@ def test_booking_future_competition(client, mock_data):
         'club': 'Elite Club',
         'places': 3
     })
+    
     assert b"Great-booking complete!" in response.data

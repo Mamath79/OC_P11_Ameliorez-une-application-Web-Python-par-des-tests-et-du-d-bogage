@@ -10,6 +10,12 @@ def client():
     with app.test_client() as client:
         yield client
 
+@pytest.fixture(autouse=True)
+def mock_save_clubs(monkeypatch):
+    """Empêche la sauvegarde des clubs dans clubs.json lors des tests."""
+    monkeypatch.setattr("server.save_club_points_db", lambda clubs, file_path="clubs.json": None)
+
+
 
 def test_purchase_more_places_than_available(client):
     """

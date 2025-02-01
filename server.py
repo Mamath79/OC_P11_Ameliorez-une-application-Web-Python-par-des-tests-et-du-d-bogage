@@ -4,6 +4,8 @@ from utilities.has_enough_places import has_enough_places
 from utilities.cannot_book_more_places_than_availables import cannot_book_more_places_than_availables
 from utilities.cannot_book_more_than_12_places import cannot_book_more_than_12_places
 from utilities.cannot_book_places_in_past_cometition import cannot_book_places_in_past_cometition
+from utilities.save_club_points_db import save_club_points_db
+
 
 def loadClubs():
     with open('clubs.json') as c:
@@ -74,12 +76,17 @@ def purchasePlaces():
     # Si au moins une erreur a été détectée, on les affiche et on retourne
     if errors:
         for error in errors:
-            flash(error)
+            flash(error)   
         return render_template('welcome.html', club=club, competitions=competitions)
-
-    # Si aucune erreur, on procède avec la réservation
+    
+    # Mise à jour des données
     competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
-    flash('Great-booking complete!')
+    club['points'] = int(club['points']) - placesRequired
+
+    # Sauvegarde dans le fichier JSON
+    save_club_points_db(clubs)
+
+    flash("Great-booking complete!")
     return render_template('welcome.html', club=club, competitions=competitions)
 
 # TODO: Add route for points display
