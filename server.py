@@ -88,7 +88,7 @@ def purchasePlaces():
     # Sauvegarde des données des competitions dans les fichiers JSON
     save_competitions_points_db(competitions)
 
-    flash("Great-booking complete!")
+    flash("Great-booking complete!", "success")
     return render_template('welcome.html', club=club, competitions=competitions)
 
 # TODO: Add route for points display
