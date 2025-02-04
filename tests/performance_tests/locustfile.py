@@ -2,8 +2,9 @@ from locust import HttpUser, task, between
 
 
 class ProjectPerfTest(HttpUser):
-
-    wait_time = between(0.1, 1)
+    
+    # simule un temps de pause entre 0,1 et 1s entre les requetes
+    wait_time = between(0.1, 1) 
 
     @task
     def load_index(self):
