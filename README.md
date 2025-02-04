@@ -1,6 +1,6 @@
-## OC_P11 - Améliorez une application Web Python par des tests et du débogage**
+## OC_P11 - Améliorez une application Web Python par des tests et du débogage
 
-###Description**
+### Description
 Ce projet a pour objectif d'améliorer une application web existante en renforçant la **qualité du code**, la **robustesse des fonctionnalités** et la **performance globale** grâce à des **tests unitaires**, **tests d'intégration**, une **analyse de couverture de code**, et des **tests de performance** avec Locust.
 
 ---
